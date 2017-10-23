@@ -12,10 +12,15 @@ NAK = chr(0x15)
 ETB = chr(0x17)
 ACK0 = '0'
 ACK1 = '1'
+BLOCK_SIZE = 245
 
 @staticmethod
 def printReceivedData(data):
     print "Received data:",data,"=",data.encode('hex')
+
+@staticmethod
+def chunkstring(string, length):
+    return (string[0+i:length+i] for i in range(0, len(string), length))
 
 class MasterReader:
     def __init__(self, serialPath, communicationID):
@@ -74,7 +79,7 @@ class Handshaker:
                         print "Got DLE"
                         state = 1
                     if x == ENQ:
-                        print "Got ENQ"
+                        print "Got ENQ. TODO: slave handshake"
                         # start slaveHandshake
                     else:
                         print "Got something else. Sending ENQ to restart master handshake"
@@ -351,4 +356,73 @@ class DataExchanger:
         return False
 
     def DC2VMDExchange(self, content):
-        
+        print "Exchanging data DC to VMD"
+        blocks = chunkstring(content, BLOCK_SIZE)
+        blockIterator = -0
+        state = 0
+        retries = 5
+        self.ser.flushInput()
+        self.ser.write(ENQ)
+        self.ser.flush()
+        while retries > 0:
+            x = self.ser.read()
+            if len(x) > 0:
+                printReceivedData(x)
+                retries = 5
+                if state == 0:
+                    print "State 0: Expecting DLE"
+                    if x == DLE:
+                        print "Got DLE"
+                        state = 1
+                    else:
+                        print "Got something else. Sending ENQ to restart data exchange"
+                        sleep(0.01)
+                        self.ser.write(ENQ)
+                        self.ser.flush()
+                elif state == 1:
+                    print "State 1: Expecting second half of DLE"
+                    if x == '0' or x == '1':
+                        if blockIterator == len(blocks) - 1:
+                            print "Reached end of content"
+                            sleep(0.01)
+                            self.ser.write(EOT)
+                            self.ser.flush()
+                            print "Data exchange DC to VMD completed"
+                            return True
+                        else:
+                            print "Got second half of DLE. Sending next block"
+                            blockIterator += 1
+                    else:
+                        print "Got something else. Resending block"
+                    sleep(0.01)
+                    self.ser.write(DLE)
+                    self.ser.write(STX)
+                    self.ser.write(blocks[blockIterator])
+                    if blockIterator < (len(blocks) - 1):
+                        state == 2
+                    elif blockIterator == (len(blocks) - 1):
+                        state == 3
+                elif state == 2:
+                    print "State 2: Sending block end"
+                    self.ser.write(DLE)
+                    self.ser.write(ETB)
+                    crc = dexcrc16.crcStr(self.communicationID + ETB)
+                    self.ser.write(chr(crc & 0xFF))
+                    self.ser.write(chr(crc >> 8))
+                    self.flush()
+                    state = 0
+                elif state == 3:
+                    print "State 3: Sending content end"
+                    self.ser.write(DLE)
+                    self.ser.write(ETX)
+                    crc = dexcrc16.crcStr(self.communicationID + ETX)
+                    self.ser.write(chr(crc & 0xFF))
+                    self.ser.write(chr(crc >> 8))
+                    self.flush()
+                    state = 0
+            else:
+                retries = retries - 1
+                sleep(0.01)
+                print "tring again"
+        print "Exchanging data DC to VMD Gave Up"
+        return False
