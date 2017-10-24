@@ -31,7 +31,7 @@ class MasterReader:
 
     def read(self):
         handshaker = Handshaker(self.ser, self.communicationID)
-        dataExchanger = dataExchanger(self.ser)
+        dataExchanger = DataExchanger(self.ser)
         handshaker.firstHandshakeDCMaster("READ")
         sleep(0.1)
         handshaker.secondHandshakeVMDMaster()
