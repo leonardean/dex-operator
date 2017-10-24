@@ -99,13 +99,12 @@ class Handshaker:
                         for char in self.communicationID:
                             self.ser.write(char)
                             sleep(0.01)
-                        print "Sending Operation Request"
-                        if operation == "READ":
-                            self.ser.write("R")
-                        elif operation == "SEND":
-                            self.ser.write("S")
+                        # print "Sending Operation Request"
+                        # if operation == "READ":
+                        #     self.ser.write("R")
+                        # elif operation == "SEND":
+                        #     self.ser.write("S")
                         print "Sending DLE"
-                        sleep(0.01)
                         self.ser.write(DLE)
                         print "Sending ETX"
                         self.ser.write(ETX)
