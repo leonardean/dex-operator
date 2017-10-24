@@ -98,11 +98,9 @@ class Handshaker:
                             self.ser.write(char)
                         print "Sending Operation Request"
                         if operation == "READ":
-                            for char in "R":
-                                self.ser.write(char)
+                            self.ser.write('R')
                         elif operation == "SEND":
-                            for char in "S":
-                                self.ser.write(char)
+                            self.ser.write('S')
                         print "Sending DLE"
                         self.ser.write(DLE)
                         print "Sending ETX"
