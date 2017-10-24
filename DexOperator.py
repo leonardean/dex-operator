@@ -97,10 +97,10 @@ class Handshaker:
                         for char in self.communicationID:
                             self.ser.write(char)
                         print "Sending Operation Request"
-                        if operation == "READ":
-                            self.ser.write('R')
-                        elif operation == "SEND":
-                            self.ser.write('S')
+                        # if operation == "READ":
+                        #     self.ser.write('R')
+                        # elif operation == "SEND":
+                        #     self.ser.write('S')
                         print "Sending DLE"
                         self.ser.write(DLE)
                         print "Sending ETX"
