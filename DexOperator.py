@@ -57,7 +57,7 @@ class MasterWriter:
         dataExchanger.DC2VMDExchange(content)
 
 class Handshaker:
-    def __init__(self, ser):
+    def __init__(self, ser, communicationID):
         self.ser = ser
         self.communicationID = communicationID
 
