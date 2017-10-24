@@ -65,6 +65,7 @@ class Handshaker:
         retries = 5
         self.ser.flushInput()
         self.ser.write(ENQ)
+        self.ser.flush()
         while retries > 0:
             x = self.ser.read()
             if len(x) > 0:
@@ -108,7 +109,7 @@ class Handshaker:
                         crc = dexcrc16.crcStr(self.communicationID + ETX)
                         self.ser.write(chr(crc & 0xFF))
                         self.ser.write(chr(crc >> 8))
-                        self.flush()
+                        self.ser.flush()
                         state = 2
                     else:
                         print "Something Wrong. Sending ENQ to restart master handshake"
