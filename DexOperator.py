@@ -96,7 +96,7 @@ class Handshaker:
                         print "Sending communication ID"
                         for char in self.communicationID:
                             self.ser.write(char)
-                        print "Sending Operation Request"
+                        # print "Sending Operation Request"
                         # if operation == "READ":
                         #     self.ser.write('R')
                         # elif operation == "SEND":
@@ -110,7 +110,6 @@ class Handshaker:
                         self.ser.write(chr(crc & 0xFF))
                         self.ser.write(chr(crc >> 8))
                         self.ser.flush()
-                        sleep(0.2)
                         state = 2
                     else:
                         print "Something Wrong. Sending ENQ to restart master handshake"
@@ -143,7 +142,6 @@ class Handshaker:
                         state = 0
             else:
                 retries = retries - 1
-                sleep(0.1)
                 print "***** trying again *****"
         print "First Handshake DC as Master gave up"
         return False
