@@ -92,8 +92,10 @@ class Handshaker:
                         sleep(0.01)
                         self.ser.write(DLE)
                         print "Sending SOH"
+                        sleep(0.01)
                         self.ser.write(SOH)
                         print "Sending communication ID"
+                        sleep(0.01)
                         for char in self.communicationID:
                             self.ser.write(char)
                         print "Sending Operation Request"
@@ -142,7 +144,7 @@ class Handshaker:
                         state = 0
             else:
                 retries = retries - 1
-                sleep(0.01)
+                sleep(0.1)
                 print "trying again"
         print "First Handshake DC as Master gave up"
         return False
