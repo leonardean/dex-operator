@@ -14,11 +14,9 @@ ACK0 = '0'
 ACK1 = '1'
 BLOCK_SIZE = 245
 
-@staticmethod
 def printReceivedData(data):
     print "Received data:",data,"=",data.encode('hex')
 
-@staticmethod
 def chunkstring(string, length):
     return (string[0+i:length+i] for i in range(0, len(string), length))
 
