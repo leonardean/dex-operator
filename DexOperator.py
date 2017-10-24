@@ -68,6 +68,7 @@ class Handshaker:
         self.ser.flush()
         while retries > 0:
             x = self.ser.read()
+            printReceivedData(x)
             if len(x) > 0:
                 printReceivedData(x)
                 retries = 5
