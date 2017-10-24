@@ -110,7 +110,7 @@ class Handshaker:
                         self.ser.write(chr(crc & 0xFF))
                         self.ser.write(chr(crc >> 8))
                         self.ser.flush()
-                        sleep(0.01)
+                        sleep(0.1)
                         state = 2
                     else:
                         print "Something Wrong. Sending ENQ to restart master handshake"
