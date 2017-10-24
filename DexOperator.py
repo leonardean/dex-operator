@@ -38,7 +38,7 @@ class MasterReader:
         sleep(0.1)
         return dataExchanger.VMD2DCExchange()
 
-class SlaveReader:
+# class SlaveReader:
 
 class MasterWriter:
     def __init__(self, serialPath, communicationID):
