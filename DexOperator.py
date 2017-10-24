@@ -76,7 +76,7 @@ class Handshaker:
                     if x == DLE:
                         print "Got DLE"
                         state = 1
-                    if x == ENQ:
+                    elif x == ENQ:
                         print "Got ENQ. TODO: slave handshake"
                         # start slaveHandshake
                     else:
