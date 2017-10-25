@@ -13,7 +13,7 @@ def main():
         if result != False:
             gotData = True
             fileWriter = open("/home/pi/Documents/vendingCPDataBuffer/dexRaw/dex_data.txt", "w")
-            fileWriter.write(data)
+            fileWriter.write(result)
             fileWriter.close()
             print result
 
