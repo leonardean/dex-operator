@@ -9,7 +9,7 @@ def main():
     gotData = False
     while not gotData:
         result = readData()
-        if result !== False:
+        if result != False:
             gotData = True
             print result
 
