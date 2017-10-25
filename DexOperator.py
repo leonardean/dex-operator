@@ -228,7 +228,7 @@ class Handshaker:
         receivedData = ""
         block = ""
         state = 0
-        retries = 10
+        retries = 5
         currentAck = ACK0
         self.ser.flushInput()
 
@@ -236,7 +236,7 @@ class Handshaker:
             x = self.ser.read()
             printReceivedData(x)
             if len(x) > 0:
-                retries = 10
+                retries = 5
                 if state == 0:
                     print "State 0: Expecting ENQ"
                     if x == ENQ:
@@ -345,7 +345,6 @@ class Handshaker:
                         state = 0
             else:
                 retries = retries - 1
-                sleep(0.2)
                 print "trying again"
         print "Exchanging data VMD to DC Gave Up"
         return False
