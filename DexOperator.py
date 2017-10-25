@@ -39,9 +39,6 @@ class MasterReader:
         secondHandshakeVMDMasterResult = handshaker.secondHandshakeVMDMaster()
         if secondHandshakeVMDMasterResult == False:
             return False
-        self.ser.close()
-        self.ser = serial.Serial(self.serialPath, 9600, timeout=0.01)
-        handshaker = Handshaker(self.ser, self.communicationID)
         self.content = handshaker.VMD2DCExchange()
         self.ser.close()
         return self.content
@@ -352,6 +349,7 @@ class Handshaker:
                         state = 0
             else:
                 retries = retries - 1
+                sleep(0.1)
                 print "trying again"
         print "Exchanging data VMD to DC Gave Up"
         return False
