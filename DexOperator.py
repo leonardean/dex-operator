@@ -525,7 +525,7 @@ class DataExchanger:
                             #print "Got second half of DLE. Sending next block"
                             blockIterator += 1
                     else:
-                        #print "Got something else. Resending block"
+                        print "Got something else. Resending block"
                     sleep(0.01)
                     self.ser.write(DLE)
                     self.ser.write(STX)
