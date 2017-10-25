@@ -163,7 +163,7 @@ class Handshaker:
                         sleep(0.01)
                         self.ser.write(DLE)
                         self.ser.write('0')
-                        self.flush()
+                        self.ser.flush()
                     elif x == EOT:
                         print "Second Handshake VMD as Master Completed"
                         return True
