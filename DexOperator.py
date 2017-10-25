@@ -20,6 +20,9 @@ def printReceivedData(data):
 def chunkstring(string, length):
     return (string[0+i:length+i] for i in range(0, len(string), length))
 
+def printLog(content):
+    print (content)
+
 class MasterReader:
     def __init__(self, serialPath, communicationID):
         self.serialPath = serialPath
