@@ -16,6 +16,7 @@ BLOCK_SIZE = 245
 
 def printReceivedData(data):
     #print "Received data:",data,"=",data.encode('hex')
+    return True
 
 def chunkstring(string, length):
     return (string[0+i:length+i] for i in range(0, len(string), length))
