@@ -57,6 +57,7 @@ class Handshaker:
     def __init__(self, ser, communicationID):
         self.ser = ser
         self.communicationID = communicationID
+        self.content = ""
 
     def firstHandshakeDCMaster(self, operation):
         print "Entering First Handshake DC as Master"
