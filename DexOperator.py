@@ -26,13 +26,15 @@ class MasterReader:
         self.communicationID = communicationID
         print "opening connection to " + self.serialPath
         self.ser = serial.Serial(self.serialPath, 9600, timeout=0.01)
+        self.content = ""
 
     def read(self):
         handshaker = Handshaker(self.ser, self.communicationID)
         handshaker.firstHandshakeDCMaster("READ")
         handshaker.secondHandshakeVMDMaster()
-        sleep(0.2)
-        return handshaker.VMD2DCExchange()
+        self.content = handshaker.VMD2DCExchange()
+        self.ser.close()
+        return self.content
 
 # class SlaveReader:
 
@@ -340,6 +342,7 @@ class Handshaker:
                         state = 0
             else:
                 retries = retries - 1
+                sleep(0.1)
                 print "trying again"
         print "Exchanging data VMD to DC Gave Up"
         return False
