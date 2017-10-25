@@ -1,4 +1,5 @@
 import DexOperator
+from time import sleep
 
 def readData():
     masterReader = DexOperator.MasterReader("/dev/ttyUSB0", "NEC1234567RR01L01")
@@ -11,6 +12,9 @@ def main():
         result = readData()
         if result != False:
             gotData = True
+            fileWriter = open("/home/pi/Documents/vendingCPDataBuffer/dexRaw/dex_data.txt", "w")
+            fileWriter.write(data)
+            fileWriter.close()
             print result
 
 if __name__ == '__main__':
