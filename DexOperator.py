@@ -79,6 +79,9 @@ class Handshaker:
                     elif x == ENQ:
                         print "Got ENQ. TODO: slave handshake"
                         # start slaveHandshake
+                        sleep(0.01)
+                        self.ser.write(NAK)
+                        self.ser.flush()
                     else:
                         print "Got something else. Sending ENQ to restart master handshake"
                         sleep(0.01)
