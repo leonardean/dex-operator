@@ -31,8 +31,7 @@ class MasterReader:
         handshaker = Handshaker(self.ser, self.communicationID)
         handshaker.firstHandshakeDCMaster("READ")
         handshaker.secondHandshakeVMDMaster()
-        # dataExchanger = DataExchanger(self.ser)
-        # sleep(0.1)
+        sleep(0.1)
         return handshaker.VMD2DCExchange()
 
 # class SlaveReader:
@@ -99,11 +98,6 @@ class Handshaker:
                         print "Sending communication ID"
                         for char in self.communicationID:
                             self.ser.write(char)
-                        # print "Sending Operation Request"
-                        # if operation == "READ":
-                        #     self.ser.write('R')
-                        # elif operation == "SEND":
-                        #     self.ser.write('S')
                         print "Sending DLE"
                         self.ser.write(DLE)
                         print "Sending ETX"
