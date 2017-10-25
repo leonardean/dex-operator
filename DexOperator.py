@@ -39,6 +39,9 @@ class MasterReader:
         secondHandshakeVMDMasterResult = handshaker.secondHandshakeVMDMaster()
         if secondHandshakeVMDMasterResult == False:
             return False
+        self.ser.close()
+        self.ser = serial.Serial(self.serialPath, 9600, timeout=0.01)
+        handshaker = Handshaker(self.ser, self.communicationID)
         self.content = handshaker.VMD2DCExchange()
         self.ser.close()
         return self.content
