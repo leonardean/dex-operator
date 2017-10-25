@@ -31,9 +31,9 @@ class MasterReader:
         handshaker = Handshaker(self.ser, self.communicationID)
         handshaker.firstHandshakeDCMaster("READ")
         handshaker.secondHandshakeVMDMaster()
-        dataExchanger = DataExchanger(self.ser)
-        sleep(0.1)
-        return dataExchanger.VMD2DCExchange()
+        # dataExchanger = DataExchanger(self.ser)
+        # sleep(0.1)
+        return handshaker.VMD2DCExchange()
 
 # class SlaveReader:
 
@@ -218,6 +218,133 @@ class Handshaker:
                 sleep(0.01)
                 print "trying again"
         print "Second Handshake VMD as Master Gave up"
+        return False
+
+    def VMD2DCExchange(self):
+        print "Exchanging data VMD to DC"
+        receivedData = ""
+        block = ""
+        state = 0
+        retries = 5
+        currentAck = ACK0
+        self.ser.flushInput()
+
+        while retries > 0:
+            x = self.ser.read()
+            printReceivedData(x)
+            if len(x) > 0:
+                retries = 5
+                if state == 0:
+                    print "State 0: Expecting ENQ"
+                    if x == ENQ:
+                        print "Got ENQ. Replying ACK"
+                        sleep(0.01)
+                        self.ser.write(DLE)
+                        self.ser.write(currentAck)
+                        self.ser.flush()
+                        if currentAck == ACK0:
+                            currentAck = ACK1
+                        elif currentAck == ACK1:
+                            currentAck = ACK0
+                    elif x == DLE:
+                        print "Got DLE. Start of block"
+                        state = 1
+                elif state == 1:
+                    print "State 1: Expecting STX"
+                    if x == STX:
+                        print "Got STX. Start block receiving"
+                        state = 2
+                        receivedData = ""
+                        block = ""
+                elif state == 2:
+                    print "State 2: Receiving data block"
+                    if x == DLE:
+                        print "Got DLE. end of data"
+                        state = 3
+                    else:
+                        receivedData += x
+                        block += x
+                elif state == 3:
+                    print "State 3: waiting for end of block"
+                    if x == ETB:
+                        print "Got ETB, end of current block"
+                        receivedData += x
+                        state = 4
+                    elif x == ETX:
+                        print "Got ETX, end of last block"
+                        receivedData += x
+                        state = 6
+                    else:
+                        print "Got something other than end of block"
+                        self.ser.write(NAK)
+                        state = 0
+                elif state == 4:
+                    print "State 4 - Waiting for first half of CRC"
+                    receivedData += x
+                    state = 5
+                elif state == 5:
+                    print "State 5 - Waiting for second half of CRC"
+                    receivedData += x
+                    crc = dexcrc16.crcStr(receivedData)
+                    print "Got all data, crc=",crc
+                    if crc == 0:
+                        print "CRC is good"
+                        self.content += block
+                        sleep(0.01)
+                        self.ser.write(DLE)
+                        self.ser.write(currentAck)
+                        self.ser.flush()
+                        if currentAck == ACK0:
+                            currentAck = ACK1
+                        elif currentAck == ACK1:
+                            currentAck = ACK0
+                        state = 0
+                    else:
+                        print "CRC failed"
+                        sleep(0.01)
+                        self.ser.write(NAK)
+                        self.ser.flush()
+                        state = 0
+                elif state == 6:
+                    print "State 6 - Waiting for first half of CRC"
+                    receivedData += x
+                    state = 7
+                elif state == 7:
+                    print "State 7 - Waiting for second half of CRC"
+                    receivedData += x
+                    crc = dexcrc16.crcStr(receivedData)
+                    print "Got all data, crc=",crc
+                    if crc == 0:
+                        print "CRC is good"
+                        self.content += block
+                        self.ser.write(DLE)
+                        self.ser.write(currentAck)
+                        state = 8
+                        self.ser.flush()
+                        if currentAck == ACK0:
+                            currentAck = ACK1
+                        elif currentAck == ACK1:
+                            currentAck = ACK0
+                    else:
+                        print "CRC failed"
+                        self.ser.write(NAK)
+                        state = 0
+                elif state == 8:
+                    print "State 8 - waiting for EOT"
+                    if x == EOT:
+                        print "Got EOT, End of data exchange"
+                        return self.content
+                    else:
+                        print "Got something else."
+                        sleep(0.01)
+                        self.ser.write(NAK)
+                        self.ser.flush()
+                        state = 0
+            else:
+                retries = retries - 1
+                sleep(0.01)
+                print "trying again"
+        print "Exchanging data VMD to DC Gave Up"
         return False
 
 class DataExchanger:
