@@ -28,10 +28,10 @@ class MasterReader:
         self.ser = serial.Serial(self.serialPath, 9600, timeout=0.01)
 
     def read(self):
-        handshaker = Handshaker(self.ser, self.communicationID)
-        dataExchanger = DataExchanger(self.ser)
+        handshaker = Handshaker(self.ser, self.communicationID)        
         handshaker.firstHandshakeDCMaster("READ")
-        handshaker.secondHandshakeVMDMaster()
+        ser = handshaker.secondHandshakeVMDMaster()
+        dataExchanger = DataExchanger(ser)
         return dataExchanger.VMD2DCExchange()
 
 # class SlaveReader:
@@ -166,7 +166,7 @@ class Handshaker:
                         self.ser.flush()
                     elif x == EOT:
                         print "Second Handshake VMD as Master Completed"
-                        return True
+                        return self.ser
                     elif x == DLE:
                         print "Got DLE. Receiving data now"
                         state = 1
