@@ -31,7 +31,7 @@ class MasterReader:
         handshaker = Handshaker(self.ser, self.communicationID)
         handshaker.firstHandshakeDCMaster("READ")
         handshaker.secondHandshakeVMDMaster()
-        sleep(0.1)
+        sleep(0.2)
         return handshaker.VMD2DCExchange()
 
 # class SlaveReader:
@@ -340,7 +340,6 @@ class Handshaker:
                         state = 0
             else:
                 retries = retries - 1
-                sleep(0.01)
                 print "trying again"
         print "Exchanging data VMD to DC Gave Up"
         return False
