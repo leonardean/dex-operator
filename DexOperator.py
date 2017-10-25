@@ -33,8 +33,12 @@ class MasterReader:
 
     def read(self):
         handshaker = Handshaker(self.ser, self.communicationID)
-        handshaker.firstHandshakeDCMaster("READ")
-        handshaker.secondHandshakeVMDMaster()
+        firstHandshakeDCMasterResult = handshaker.firstHandshakeDCMaster("READ")
+        if firstHandshakeDCMasterResult == False:
+            return False
+        secondHandshakeVMDMasterResult = handshaker.secondHandshakeVMDMaster()
+        if secondHandshakeVMDMasterResult == False:
+            return False
         self.content = handshaker.VMD2DCExchange()
         self.ser.close()
         return self.content
@@ -228,7 +232,7 @@ class Handshaker:
         receivedData = ""
         block = ""
         state = 0
-        retries = 5
+        retries = 50
         currentAck = ACK0
         self.ser.flushInput()
 
@@ -236,7 +240,7 @@ class Handshaker:
             x = self.ser.read()
             printReceivedData(x)
             if len(x) > 0:
-                retries = 5
+                retries = 50
                 if state == 0:
                     print "State 0: Expecting ENQ"
                     if x == ENQ:
