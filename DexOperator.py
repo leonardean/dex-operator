@@ -117,11 +117,14 @@ class Handshaker:
                         print "Sending CRC"
                         print "original string: " + self.communicationID + ETX
                         crc = dexcrc16.crcStr(self.communicationID + ETX)
-                        print "crc string: " + crc
+                        print "crc string: "
+                        print crc
                         self.ser.write(chr(crc & 0xFF))
-                        print "crc trans1: " + chr(crc & 0xFF)
+                        print "crc trans1: "
+                        print chr(crc & 0xFF)
                         self.ser.write(chr(crc >> 8))
-                        print "crc trans2: " + chr(crc >> 8)
+                        print "crc trans2: "
+                        print chr(crc >> 8)
                         self.ser.flush()
                         sleep(0.2)
                         state = 2
