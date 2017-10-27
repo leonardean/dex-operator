@@ -132,7 +132,8 @@ class Handshaker:
                         print "Got DLE"
                         state = 3
                     else:
-                        #print "Got something other than DLE. Bad"
+                        print "Got something other than DLE. Bad"
+                        print "Received data:",x,"=",x.encode('hex')
                         return False
                 elif state == 3:
                     print "State 3: Expecting '1' or '0'"
