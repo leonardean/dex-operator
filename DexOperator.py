@@ -53,7 +53,7 @@ class MasterWriter:
 
     def write(self, content):
         handshaker = Handshaker(self.ser, self.communicationID)
-        dataExchanger = dataExchanger(self.ser)
+        dataExchanger = DataExchanger(self.ser)
         firstHandshakeDCMasterResult = handshaker.firstHandshakeDCMaster()
         if firstHandshakeDCMasterResult == False:
             return False
