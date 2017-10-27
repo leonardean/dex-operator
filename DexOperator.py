@@ -107,14 +107,16 @@ class Handshaker:
                         self.ser.write(DLE)
                         #print "Sending SOH"
                         self.ser.write(SOH)
-                        #print "Sending communication ID"
+                        # print "Sending communication ID"
                         for char in self.communicationID:
                             self.ser.write(char)
                         #print "Sending DLE"
                         self.ser.write(DLE)
                         #print "Sending ETX"
                         self.ser.write(ETX)
+                        print self.communicationID
                         crc = dexcrc16.crcStr(self.communicationID + ETX)
+                        print crc
                         self.ser.write(chr(crc & 0xFF))
                         self.ser.write(chr(crc >> 8))
                         self.ser.flush()
