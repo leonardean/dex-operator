@@ -28,13 +28,12 @@ class MasterReader:
     def __init__(self, serialPath, communicationID):
         self.serialPath = serialPath
         self.communicationID = communicationID
-        #print "opening connection to " + self.serialPath
         self.ser = serial.Serial(self.serialPath, 9600, timeout=0.01)
         self.content = ""
 
     def read(self):
         handshaker = Handshaker(self.ser, self.communicationID)
-        firstHandshakeDCMasterResult = handshaker.firstHandshakeDCMaster("READ")
+        firstHandshakeDCMasterResult = handshaker.firstHandshakeDCMaster()
         if firstHandshakeDCMasterResult == False:
             return False
         secondHandshakeVMDMasterResult = handshaker.secondHandshakeVMDMaster()
@@ -50,17 +49,20 @@ class MasterWriter:
     def __init__(self, serialPath, communicationID):
         self.serialPath = serialPath
         self.communicationID = communicationID
-        #print "opening connection to " + self.serialPath
         self.ser = serial.Serial(self.serialPath, 9600, timeout=0.01)
 
     def write(self, content):
         handshaker = Handshaker(self.ser, self.communicationID)
         dataExchanger = dataExchanger(self.ser)
-        handshaker.firstHandshakeDCMaster("SEND")
-        sleep(0.1)
-        handshaker.secondHandshakeVMDMaster()
-        sleep(0.1)
+        firstHandshakeDCMasterResult = handshaker.firstHandshakeDCMaster()
+        if firstHandshakeDCMasterResult == False:
+            return False
+        secondHandshakeVMDMasterResult = handshaker.secondHandshakeVMDMaster()
+        if secondHandshakeVMDMasterResult == False:
+            return False
         dataExchanger.DC2VMDExchange(content)
+        self.ser.close()
+        return True
 
 class Handshaker:
     def __init__(self, ser, communicationID):
@@ -68,7 +70,7 @@ class Handshaker:
         self.communicationID = communicationID
         self.content = ""
 
-    def firstHandshakeDCMaster(self, operation):
+    def firstHandshakeDCMaster(self):
         #print "Entering First Handshake DC as Master"
         state = 0
         retries = 5
@@ -112,8 +114,9 @@ class Handshaker:
                         self.ser.write(DLE)
                         #print "Sending ETX"
                         self.ser.write(ETX)
-                        #print "Sending CRC"
+                        print "Sending CRC"
                         crc = dexcrc16.crcStr(self.communicationID + ETX)
+                        print crc
                         self.ser.write(chr(crc & 0xFF))
                         self.ser.write(chr(crc >> 8))
                         self.ser.flush()
@@ -140,7 +143,7 @@ class Handshaker:
                         sleep(0.01)
                         self.ser.write(EOT)
                         self.ser.flush()
-                        #print "First Handshake DC as Master completed"
+                        print "First Handshake DC as Master completed"
                         return True
                     else:
                         #print "Got something wrong. Sending NAK"
@@ -490,7 +493,7 @@ class DataExchanger:
     def DC2VMDExchange(self, content):
         #print "Exchanging data DC to VMD"
         blocks = chunkstring(content, BLOCK_SIZE)
-        blockIterator = -0
+        blockIterator = -1
         state = 0
         retries = 5
         self.ser.flushInput()
@@ -555,6 +558,6 @@ class DataExchanger:
             else:
                 retries = retries - 1
                 sleep(0.01)
-                #print "tring again"
+                print "tring again"
         #print "Exchanging data DC to VMD Gave Up"
         return False
