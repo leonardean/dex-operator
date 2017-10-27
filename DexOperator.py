@@ -71,7 +71,7 @@ class Handshaker:
         self.content = ""
 
     def firstHandshakeDCMaster(self):
-        #print "Entering First Handshake DC as Master"
+        print "Entering First Handshake DC as Master"
         state = 0
         retries = 5
         self.ser.flushInput()
@@ -83,26 +83,26 @@ class Handshaker:
                 printReceivedData(x)
                 retries = 5
                 if state == 0:
-                    #print "State 0: Expecting DLE"
+                    print "State 0: Expecting DLE"
                     if x == DLE:
-                        #print "Got DLE"
+                        print "Got DLE"
                         state = 1
                     elif x == ENQ:
-                        #print "Got ENQ. TODO: slave handshake"
+                        print "Got ENQ. TODO: slave handshake"
                         # start slaveHandshake
                         sleep(0.01)
                         self.ser.write(NAK)
                         self.ser.flush()
                     else:
-                        #print "Got something else. Sending ENQ to restart master handshake"
+                        print "Got something else. Sending ENQ to restart master handshake"
                         sleep(0.01)
                         self.ser.write(ENQ)
                         self.ser.flush()
                 elif state == 1:
-                    #print "State 1: Expecting '0'"
+                    print "State 1: Expecting '0'"
                     if x == '0':
-                        #print "Got second half of DLE"
-                        #print "Sending DLE"
+                        print "Got second half of DLE"
+                        print "Sending DLE"
                         sleep(0.01)
                         self.ser.write(DLE)
                         #print "Sending SOH"
@@ -127,17 +127,17 @@ class Handshaker:
                         self.ser.flush()
                         state = 0
                 elif state == 2:
-                    #print "State 2: Expecting DLE"
+                    print "State 2: Expecting DLE"
                     if x == DLE:
-                        #print "Got DLE"
+                        print "Got DLE"
                         state = 3
                     else:
                         #print "Got something other than DLE. Bad"
                         return False
                 elif state == 3:
-                    #print "State 3: Expecting '1' or '0'"
+                    print "State 3: Expecting '1' or '0'"
                     if x == '1' or x == '0':
-                        #print "Got second half of DLE. Sending EOT"
+                        print "Got second half of DLE. Sending EOT"
                         sleep(0.01)
                         self.ser.write(EOT)
                         self.ser.flush()
@@ -151,8 +151,8 @@ class Handshaker:
                         state = 0
             else:
                 retries = retries - 1
-                #print "***** trying again *****"
-        #print "First Handshake DC as Master gave up"
+                print "***** trying again *****"
+        print "First Handshake DC as Master gave up"
         return False
 
     def secondHandshakeVMDMaster(self):
